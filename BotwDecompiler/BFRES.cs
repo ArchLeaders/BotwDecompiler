@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BotwDecompiler
 {
-    internal class MSBT
+    internal class BFRES
     {
 
     }
