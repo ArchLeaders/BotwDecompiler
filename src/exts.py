@@ -1,36 +1,30 @@
-BARS_EXT = [
-    'bars'
-]
+BARS_EXT = ["bars"]
 
-BFEVFL_EXT = [
-    'bfevfl'
-]
+BFEVFL_EXT = ["bfevfl"]
 
 BFRES_EXT = [
-    'bfres',
-    'breviewtex',
-    'bitemico',
-    'sbfres',
-    'sbreviewtex',
-    'sbitemico',
+    "bfres",
+    "breviewtex",
+    "bitemico",
+    "sbfres",
+    "sbreviewtex",
+    "sbitemico",
 ]
 
 HK_EXT = [
-    'hkrb',
-    'hksc',
-    'hknm2',
-    'hktmrb',
-    'hkcl',
-    'hkrg',
-    'shkrb',
-    'shksc',
-    'shknm2',
-    'shktmrb',
-    'shkcl',
-    'shkrg',
-],
-
-MSBT_EXT = [
-    'msbt'
+    "hkrb",
+    "hksc",
+    "hknm2",
+    "hktmrb",
+    "hkcl",
+    "hkrg",
+    "shkrb",
+    "shksc",
+    "shknm2",
+    "shktmrb",
+    "shkcl",
+    "shkrg",
 ]
 
+
+MSBT_EXT = ["msbt"]
