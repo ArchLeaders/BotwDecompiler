@@ -1,3 +1,4 @@
+import asyncio
 import os
 import sys
 import oead
@@ -24,10 +25,15 @@ dirs = {
 }
 
 
-def main():
+async def main():
+
+    tasks = []
 
     for key, dir in dirs.items():
         for file in Path(dir).glob("**/*.*"):
+
+            # void update
+            key = key.replace("update", "game")
 
             # get extension
             ext = str(file).split(".")
@@ -42,16 +48,16 @@ def main():
             out_file = str(file).replace(str(dir), str(out_file))
 
             if ext in exts.BARS_EXT:
-                decomp.bars(file, out_file)
+                tasks.append(asyncio.create_task(decomp.bars(file, out_file)))
 
             elif ext in exts.BFEVFL_EXT:
-                decomp.evfl(file, out_file)
+                tasks.append(asyncio.create_task(decomp.evfl(file, out_file)))
 
-            # Skip until re-write
-            #
-            # elif ext in exts.BFRES_EXT:
-            #     decomp.bfres(file, out_file)
+            elif ext in exts.BFRES_EXT:
+                tasks.append(asyncio.create_task(decomp.bfres(file, out_file)))
+
+    asyncio.gather(*tasks)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
