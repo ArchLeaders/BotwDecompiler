@@ -75,8 +75,8 @@ tasks.Add(Task.Run(() =>
 
         foreach (var mat in resFile.Value.Materials)
         {
-            Directory.CreateDirectory($"{outFolder}\\Models\\{resFile.Value.Name}\\Mat");
-            mat.Value.Export($"{outFolder}\\Models\\{resFile.Value.Name}\\Mat\\{mat.Value.Name}.bfmat", res);
+            Directory.CreateDirectory($"{outFolder}\\Materials\\{resFile.Value.Name}");
+            mat.Value.Export($"{outFolder}\\Materials\\{resFile.Value.Name}\\{mat.Value.Name}.bfmat", res);
 
             Console.WriteLine($"[BFRES] [MATERIALS] Exported {res.Name}/{resFile.Value.Name}/{mat.Value.Name}");
         }
