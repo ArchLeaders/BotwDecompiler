@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DecompileBfres": {
+      "commandName": "Project",
+      "commandLineArgs": "\"D:\\Botw\\Cemu\\mlc01\\usr\\title\\00050000\\101c9500\\content\\Model\\Animal_Bass.Tex1.sbfres\" \"D:\\Output\""
+    }
+  }
+}

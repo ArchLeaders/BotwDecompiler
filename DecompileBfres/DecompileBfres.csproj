@@ -9,15 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Syroot.Maths" Version="1.5.3" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="BfresLibrary">
       <HintPath>..\..\..\BotwScripts\BotwScripts.Lib\bin\Release\net6.0\BfresLibrary.dll</HintPath>
     </Reference>
     <Reference Include="Syroot.BinaryData">
       <HintPath>..\..\..\BotwScripts\BotwScripts.Lib\bin\Release\net6.0\Syroot.BinaryData.dll</HintPath>
+    </Reference>
+    <Reference Include="Syroot.Maths">
+      <HintPath>..\..\..\..\..\..\..\Botw\Tools\Model - Textures\Switch-Toolbox\Lib\Syroot.Maths.dll</HintPath>
     </Reference>
   </ItemGroup>
 

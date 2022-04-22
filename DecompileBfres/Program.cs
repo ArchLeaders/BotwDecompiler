@@ -1,8 +1,10 @@
 ﻿using BfresLibrary;
+using System.Text.Json;
 
 if (args.Length < 2)
 {
     Console.WriteLine("Invalid Arguments | DecompileBfres.exe <\"bfresFile\"> <\"outputFolder\">");
+    return;
 }
 
 string path = args[0];
@@ -11,20 +13,38 @@ string outFolder = args[1];
 if (!File.Exists(path))
     throw new FileNotFoundException($"Could not find the file '{path}'.");
 
-ResFile res = Bfres.LoadBfres(path);
+Directory.CreateDirectory(outFolder);
 
+ResFile res = Bfres.LoadBfres(path);
+SortedDictionary<string, dynamic> bfresJson = new();
 List<Task> tasks = new();
+
+Console.WriteLine("[BFRES] Set meta data");
+
+bfresJson.Add("Alignment", res.Alignment);
+bfresJson.Add("ByteOrder", $"{res.ByteOrder}");
+bfresJson.Add("Switch", res.IsPlatformSwitch);
+bfresJson.Add("Name", $"{res.Name}");
+bfresJson.Add("Textures", new List<string>());
+bfresJson.Add("Models", new List<string>());
+bfresJson.Add("Animations", new Dictionary<string, dynamic>()
+{
+    { "ColourAnim", null },
+    { "MatVisibilityAnims", null },
+    { "SceneAnims", null },
+    { "ShaderParamAnims", null },
+    { "ShapeAnims", null },
+    { "SkeletalAnims", null },
+    { "TexPatternAnims", null },
+    { "TexSrtAnims", null },
+});
+bfresJson.Add("Version", $"{res.VersioFull}");
 
 tasks.Add(Task.Run(() =>
 {
     // Colour Anims
     foreach (var resFile in res.ColorAnims)
-    {
-        Directory.CreateDirectory($"{outFolder}\\Animations\\ColourAnims");
-        resFile.Value.Export($"{outFolder}\\Animations\\ColourAnims\\{resFile.Value.Name}.bfmaa", res);
-
-        Console.WriteLine($"[BFRES] Exported {res.Name}/{resFile.Value.Name}");
-    }
+        AddAnim("ColourAnim", resFile.Value.Name);
 }));
 
 tasks.Add(Task.Run(() =>
@@ -43,12 +63,7 @@ tasks.Add(Task.Run(() =>
 {
     // Material Visibility Anims
     foreach (var resFile in res.MatVisibilityAnims)
-    {
-        Directory.CreateDirectory($"{outFolder}\\Animations\\\\MatVisibilityAnims");
-        resFile.Value.Export($"{outFolder}\\Animations\\MatVisibilityAnims\\{resFile.Value.Name}.bfbvi", res);
-
-        Console.WriteLine($"[BFRES] Exported {res.Name}/{resFile.Value.Name}");
-    }
+        AddAnim("MatVisibilityAnims", resFile.Value.Name);
 }));
 
 tasks.Add(Task.Run(() =>
@@ -56,18 +71,15 @@ tasks.Add(Task.Run(() =>
     // Models
     foreach (var resFile in res.Models)
     {
-        Directory.CreateDirectory($"{outFolder}\\Models");
-        resFile.Value.Export($"{outFolder}\\Models\\{resFile.Value.Name}.bfmdl", res);
+        AddGeneric("Models", resFile.Value.Name);
 
         foreach (var mat in resFile.Value.Materials)
         {
-            Directory.CreateDirectory($"{outFolder}\\Models\\Mat");
-            mat.Value.Export($"{outFolder}\\Models\\Mat\\{mat.Value.Name}.bfmat", res);
+            Directory.CreateDirectory($"{outFolder}\\Models\\{resFile.Value.Name}\\Mat");
+            mat.Value.Export($"{outFolder}\\Models\\{resFile.Value.Name}\\Mat\\{mat.Value.Name}.bfmat", res);
 
-            Console.WriteLine($"[BFRES] Exported {res.Name}/{resFile.Value.Name}/{mat.Value.Name}");
+            Console.WriteLine($"[BFRES] [MATERIALS] Exported {res.Name}/{resFile.Value.Name}/{mat.Value.Name}");
         }
-
-        Console.WriteLine($"[BFRES] Exported {res.Name}/{resFile.Value.Name}");
     }
 }));
 
@@ -75,78 +87,94 @@ tasks.Add(Task.Run(() =>
 {
     // Scene Anims
     foreach (var resFile in res.SceneAnims)
-    {
-        Directory.CreateDirectory($"{outFolder}\\Animations\\SceneAnims");
-        resFile.Value.Export($"{outFolder}\\Animations\\SceneAnims\\{resFile.Value.Name}.bfscn", res);
-
-        Console.WriteLine($"[BFRES] Exported {res.Name}/{resFile.Value.Name}");
-    }
+        AddAnim("SceneAnims", resFile.Value.Name);
 }));
 
 tasks.Add(Task.Run(() =>
 {
     foreach (var resFile in res.ShaderParamAnims)
-    {
-        Directory.CreateDirectory($"{outFolder}\\Animations\\ShaderParamAnims");
-        resFile.Value.Export($"{outFolder}\\Animations\\ShaderParamAnims\\{resFile.Value.Name}.bfmaa", res);
-
-        Console.WriteLine($"[BFRES] Exported {res.Name}/{resFile.Value.Name}");
-    }
+        AddAnim("ShaderParamAnims", resFile.Value.Name);
 }));
 
 tasks.Add(Task.Run(() =>
 {
     foreach (var resFile in res.ShapeAnims)
-    {
-        Directory.CreateDirectory($"{outFolder}\\Animations\\ShapeAnims");
-        resFile.Value.Export($"{outFolder}\\Animations\\ShapeAnims\\{resFile.Value.Name}.bfspa", res);
-
-        Console.WriteLine($"[BFRES] Exported {res.Name}/{resFile.Value.Name}");
-    }
+        AddAnim("ShapeAnims", resFile.Value.Name);
 }));
 
 tasks.Add(Task.Run(() =>
 {
     foreach (var resFile in res.SkeletalAnims)
-    {
-        Directory.CreateDirectory($"{outFolder}\\Animations\\SkeletalAnims");
-        resFile.Value.Export($"{outFolder}\\Animations\\SkeletalAnims\\{resFile.Value.Name}.bfska", res);
-
-        Console.WriteLine($"[BFRES] Exported {res.Name}/{resFile.Value.Name}");
-    }
+        AddAnim("SkeletalAnims", resFile.Value.Name);
 }));
 
 tasks.Add(Task.Run(() =>
 {
     foreach (var resFile in res.TexPatternAnims)
-    {
-        Directory.CreateDirectory($"{outFolder}\\Animations\\TexPatternAnims");
-        resFile.Value.Export($"{outFolder}\\Animations\\TexPatternAnims\\{resFile.Value.Name}.bftxp", res);
-
-        Console.WriteLine($"[BFRES] Exported {res.Name}/{resFile.Value.Name}");
-    }
+        AddAnim("TexPatternAnims", resFile.Value.Name);
 }));
 
 tasks.Add(Task.Run(() =>
 {
     foreach (var resFile in res.TexSrtAnims)
-    {
-        Directory.CreateDirectory($"{outFolder}\\Animations\\SceneAnims");
-        resFile.Value.Export($"{outFolder}\\Animations\\SceneAnims\\{resFile.Value.Name}.bfmaa", res);
-
-        Console.WriteLine($"[BFRES] Exported {res.Name}/{resFile.Value.Name}");
-    }
+        AddAnim("TexSrtAnims", resFile.Value.Name);
 }));
 
-tasks.Add(Task.Run(() =>
+foreach (var resFile in res.Textures)
 {
-    foreach (var resFile in res.Textures)
+    tasks.Add(Task.Run(() =>
     {
         Directory.CreateDirectory($"{outFolder}\\Textures");
         resFile.Value.Export($"{outFolder}\\Textures\\{resFile.Value.Name}.bftex", res);
+        AddGeneric("Textures", resFile.Value.Name);
 
-        Console.WriteLine($"[BFRES] Exported {res.Name}/{resFile.Value.Name}");
-    }
-}));
+        // Export PNG
+        // 
+        // Texture tex = (Texture)resFile.Value;
+        // Bitmap btm = BitmapExtension.GetBitmap(tex.Data, (int)tex.Width, (int)tex.Height);
+        // btm.Save($"{outFolder}\\Textures\\{resFile.Value.Name}.jpg");
+    }));
+}
 
 await Task.WhenAll(tasks);
+
+bool isNull = true;
+foreach (var type in bfresJson["Animations"])
+{
+    if (type.Value != null)
+        isNull = false;
+}
+
+if (isNull) bfresJson["Animations"] = null;
+
+if (bfresJson["Models"].Count == 0)
+    bfresJson["Models"] = null;
+
+if (bfresJson["Textures"].Count == 0)
+    bfresJson["Textures"] = null;
+
+using (var stream = File.OpenWrite($"{outFolder}\\{res.Name}.json"))
+    await JsonSerializer.SerializeAsync(stream, bfresJson, new JsonSerializerOptions()
+    {
+        WriteIndented = true,
+        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+    });
+
+void AddAnim(string type, string name)
+{
+    if (bfresJson["Animations"][type] == null)
+        bfresJson["Animations"][type] = new List<string>();
+
+    bfresJson["Animations"][type].Add(name);
+    bfresJson["Animations"][type].Sort();
+
+    Console.WriteLine($"[BFRES] [ANIMATIONS] Add {name}::<{type}>");
+}
+
+void AddGeneric(string key, string value)
+{
+    bfresJson[key].Add(value);
+    bfresJson[key].Sort();
+
+    Console.WriteLine($"[BFRES] Add {value}::<{key}>");
+}
