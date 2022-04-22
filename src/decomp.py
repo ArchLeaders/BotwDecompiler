@@ -1,3 +1,4 @@
+import subprocess
 import oead
 
 from pathlib import Path
@@ -52,6 +53,11 @@ def evfl(file: Path, out: Path):
 
 def bfres(file: Path, out: Path):
     """Decompile a bfres file"""
+
+    try:
+        subprocess.check_call([".\\lib\\DecompileBfres.exe", f"{file}", f"{out}"])
+    except RuntimeError as ex:
+        error(f"[BFRES] {ex}")
 
 
 def byml(file: Path, out: Path):
