@@ -1,3 +1,5 @@
+# Modifed version of https://gist.github.com/SamusAranX/6eb8b6fd1777b17afc3107a979c2409a#file-bars_extractor-py | Credit to Peter Wunder (SamusAranX)
+
 # -*- coding: utf-8 -*-
 #!/usr/bin/python3
 
@@ -11,6 +13,8 @@ import os
 import sys
 import glob
 import struct
+
+from pathlib import Path
 
 # Magic numbers, commonly known as "headers"
 BARS_HEADER = b"BARS"
@@ -33,11 +37,13 @@ FWAV_HEADER_STRUCT = struct.Struct(">4s8xI8x2I32x")
 def plural_s(n):
 	return "s" if n != 1 else ""
 
-def extract_from_bars(fname):
+def extract(fname, out_folder):
 	with open(fname, "rb") as f:
 		bars_header, bars_file_length, bars_endianness, bars_count = BARS_HEADER_STRUCT.unpack(f.read(BARS_HEADER_STRUCT.size))
 		bars_track_struct = struct.Struct(f">{bars_count*4}x{bars_count*2}I")
 		bars_track_offsets = bars_track_struct.unpack(f.read(bars_track_struct.size))
+
+		name = os.path.basename(fname)
 
 		if bars_header != BARS_HEADER:
 			raise RuntimeError(f"{f.name}: Not a valid BARS file.")
@@ -88,15 +94,13 @@ def extract_from_bars(fname):
 			strg = f.read(strg_length).decode("utf8")
 			track_names.append(strg)
 
-		print(f"{f.name}: {bars_count} track{plural_s(bars_count)} found!")
-
 		if f.tell() == bars_file_length: # We have now reached the end of the file despite the file telling us that there would be stuff here
-			raise RuntimeError(f"{f.name}: Reached EOF, this file probably doesn't actually contain any FWAVs despite containing the offsets for them")
+			raise RuntimeError(f"[BARS] {name}: Reached EOF, this file probably doesn't actually contain any FWAVs despite containing the offsets for them")
 
 		for t in range(bars_count):
 			bars_track_offset = bars_track_offsets[t * 2 + 1] # Get track offset from list
 			if bars_track_offset >= bars_file_length: # The offset the file is telling us to jump to can't exist because the file's too small
-				print(f"{f.name}: Track {t+1} probably doesn't exist, skipping it")
+				print(f"{name}: Track {t+1} probably doesn't exist, skipping it")
 				continue
 
 			f.seek(bars_track_offset) # seek to the next FWAV header
@@ -104,7 +108,7 @@ def extract_from_bars(fname):
 			fwav_header_bytes = f.read(FWAV_HEADER_STRUCT.size)
 			fwav_header, fwav_length, fwav_info_offset, fwav_data_offset = FWAV_HEADER_STRUCT.unpack(fwav_header_bytes)
 			if fwav_header not in FWAV_HEADERS:
-				print(f"{f.name}: Track {t+1} has an invalid FWAV header")
+				print(f"[BARS] {name}: Track {t+1} has an invalid FWAV header")
 				continue
 
 			f.seek(-FWAV_HEADER_STRUCT.size, os.SEEK_CUR) # seek back to the start of the FWAV data...
@@ -112,11 +116,14 @@ def extract_from_bars(fname):
 
 			track_ext = [".bfwav", ".bfstp"][FWAV_HEADERS.index(fwav_header)] # Give the output file a different extension depending on content
 			track_name = track_names[t].replace("\0", "_")[:24] # Remove null bytes and trim potentially LONG file names
-			bfwav_name = os.path.splitext(f.name)[0] + "_" + track_name + track_ext # Construct output file name
+			bfwav_name = f'{out_folder}\\{track_name}{track_ext}' # Construct output file name
+
+			if not Path(out_folder).is_dir():
+				os.makedirs(out_folder) # create output dir
 
 			with open(bfwav_name, "wb") as wf:
 				wf.write(fwav_data) # write the data to a BFWAV file
-				print(f"{f.name}: Saved track {t+1} to {bfwav_name}")
+				print(f"[BARS] Extracted {os.path.basename(fname)}/{track_name}{track_ext}")
 
 def main():
 	if len(sys.argv) == 1: # no arguments
@@ -130,7 +137,7 @@ def main():
 
 	for _f in files:
 		try:
-			extract_from_bars(_f)
+			extract(_f, os.path.basename(_f))
 		except RuntimeError as e:
 			print(e)
 

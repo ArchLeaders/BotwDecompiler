@@ -22,6 +22,13 @@ def aamp(file: Path, out: Path):
 
 def bars(file: Path, out: Path):
     """Decompile an bars file"""
+
+    from imported.bars_extractor import extract
+
+    try:
+        extract(file, out)
+    except RuntimeError as re:
+        print(re)
     
 
 def evfl(file: Path, out: Path):
