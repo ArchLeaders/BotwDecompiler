@@ -5,7 +5,7 @@ from pathlib import Path
 from utils import error
 
 
-def aamp(file: Path, out: Path):
+async def aamp(file: Path, out: Path):
     """Decompile an aamp file"""
 
     try:
@@ -29,7 +29,7 @@ def aamp(file: Path, out: Path):
         error(f"[AAMP] {ex}")
 
 
-def bars(file: Path, out: Path):
+async def bars(file: Path, out: Path):
     """Decompile a bars file"""
 
     from imported.bars_extractor import extract
@@ -40,7 +40,7 @@ def bars(file: Path, out: Path):
         error(f"[BARS] {ex}")
 
 
-def evfl(file: Path, out: Path):
+async def evfl(file: Path, out: Path):
     """Decompile a bfevfl file"""
 
     from imported.evfl_to_json import convert
@@ -51,7 +51,7 @@ def evfl(file: Path, out: Path):
         error(f"[EVFL] {ex}")
 
 
-def bfres(file: Path, out: Path):
+async def bfres(file: Path, out: Path):
     """Decompile a bfres file"""
 
     try:
@@ -60,17 +60,17 @@ def bfres(file: Path, out: Path):
         error(f"[BFRES] {ex}")
 
 
-def byml(file: Path, out: Path):
+async def byml(file: Path, out: Path):
     """Decompile a byml file"""
 
 
-def havok(file: Path, out: Path):
+async def havok(file: Path, out: Path):
     """Decompile a havok file"""
 
 
-def msbt(file: Path, out: Path):
+async def msbt(file: Path, out: Path):
     """Decompile a msbt file"""
 
 
-def sarc(file: Path, out: Path):
+async def sarc(file: Path, out: Path):
     """Decompile a sarc file"""

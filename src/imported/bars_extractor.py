@@ -113,7 +113,7 @@ def extract(fname, out_folder):
             f.tell() == bars_file_length
         ):  # We have now reached the end of the file despite the file telling us that there would be stuff here
             raise RuntimeError(
-                f"[BARS] {name}: Reached EOF, this file probably doesn't actually contain any FWAVs despite containing the offsets for them"
+                f"{name}: Reached EOF, this file probably doesn't actually contain any FWAVs despite containing the offsets for them"
             )
 
         for t in range(bars_count):
