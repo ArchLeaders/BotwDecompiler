@@ -47,6 +47,11 @@ def main():
             elif ext in exts.BFEVFL_EXT:
                 decomp.evfl(file, out_file)
 
+            # Skip until re-write
+            #
+            # elif ext in exts.BFRES_EXT:
+            #     decomp.bfres(file, out_file)
+
 
 if __name__ == "__main__":
     main()
