@@ -1,5 +1,9 @@
 ﻿using BfresLibrary;
+using BfresLibrary.WiiU;
+using DecompileBfres;
+using System.Drawing;
 using System.Text.Json;
+using Toolbox.Library;
 
 if (args.Length < 2)
 {
@@ -129,7 +133,6 @@ foreach (var resFile in res.Textures)
         AddGeneric("Textures", resFile.Value.Name);
 
         // Export PNG
-        // 
         // Texture tex = (Texture)resFile.Value;
         // Bitmap btm = BitmapExtension.GetBitmap(tex.Data, (int)tex.Width, (int)tex.Height);
         // btm.Save($"{outFolder}\\Textures\\{resFile.Value.Name}.jpg");
