@@ -8,7 +8,7 @@ import decomp
 from bcml import util
 from pathlib import Path
 
-out = ".\\decompiled"
+out = ".\\decompiled_bta"
 
 if len(sys.argv) >= 2:
     out = sys.argv[2]
@@ -27,7 +27,9 @@ dirs = {
 
 async def main():
 
-    tasks = []
+    print("Scanning source files...")
+
+    # tasks = []
 
     for key, dir in dirs.items():
         for file in Path(dir).glob("**/*.*"):
@@ -44,31 +46,33 @@ async def main():
 
             out_file = str(file).replace(str(dir), str(out_file))
 
+            # print(f"await::<{file}>")
+
             if ext in exts.BARS_EXT:
-                tasks.append(asyncio.create_task(decomp.bars(file, out_file)))
+                decomp.bars(file, out_file)
 
             elif ext in exts.BFEVFL_EXT:
-                tasks.append(asyncio.create_task(decomp.evfl(file, out_file)))
+                decomp.evfl(file, out_file)
 
             elif ext in exts.BFRES_EXT:
-                tasks.append(asyncio.create_task(decomp.bfres(file, out_file)))
+                decomp.bfres(file, out_file)
 
-            elif ext in util.BYML_EXTS:
-                tasks.append(asyncio.create_task(decomp.byml(file, out_file)))
+            elif ext in exts.BYML_EXTS:
+                decomp.byml(file, out_file)
 
             elif ext in exts.HK_EXT:
-                tasks.append(asyncio.create_task(decomp.havok(file, out_file)))
+                decomp.havok(file, out_file)
 
             elif ext in exts.MSBT_EXT:
-                tasks.append(asyncio.create_task(decomp.msbt(file, out_file)))
+                decomp.msbt(file, out_file)
 
-            elif ext in util.SARC_EXTS:
-                tasks.append(asyncio.create_task(decomp.sarc(file, out_file)))
+            elif ext in exts.SARC_EXTS:
+                decomp.sarc(file, out_file)
 
             else:
-                tasks.append(asyncio.create_task(decomp.copy(file, out_file)))
+                decomp.copy(file, out_file)
 
-    asyncio.gather(*tasks)
+    # asyncio.gather(*tasks)
 
 
 if __name__ == "__main__":
