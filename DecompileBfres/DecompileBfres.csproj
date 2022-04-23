@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DirectXTexNet" Version="1.0.3" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
 
@@ -22,9 +23,12 @@
     <Reference Include="Syroot.Maths">
       <HintPath>..\..\..\..\..\..\..\Botw\Tools\Model - Textures\Switch-Toolbox\Lib\Syroot.Maths.dll</HintPath>
     </Reference>
-    <Reference Include="Toolbox.Library">
-      <HintPath>..\..\..\..\..\..\..\Botw\Tools\Model - Textures\Switch-Toolbox\Toolbox.Library.dll</HintPath>
-    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="x64\DirectXTexNetImpl.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
