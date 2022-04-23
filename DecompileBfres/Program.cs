@@ -3,7 +3,6 @@ using BfresLibrary.WiiU;
 using DecompileBfres;
 using System.Drawing;
 using System.Text.Json;
-using Toolbox.Library;
 
 if (args.Length < 2)
 {
@@ -128,14 +127,19 @@ foreach (var resFile in res.Textures)
 {
     tasks.Add(Task.Run(() =>
     {
+        // Export PNG
+        Texture tex = (Texture)resFile.Value;
         Directory.CreateDirectory($"{outFolder}\\Textures");
-        resFile.Value.Export($"{outFolder}\\Textures\\{resFile.Value.Name}.bftex", res);
+        
         AddGeneric("Textures", resFile.Value.Name);
 
-        // Export PNG
-        // Texture tex = (Texture)resFile.Value;
-        // Bitmap btm = BitmapExtension.GetBitmap(tex.Data, (int)tex.Width, (int)tex.Height);
-        // btm.Save($"{outFolder}\\Textures\\{resFile.Value.Name}.jpg");
+        byte[] data = new byte[0];
+
+        DirectXTexLibrary.TextureDecoder.Decode(tex.Format.GetDXGI(), tex.GetDeswizzledData(0, 0), (int)tex.Width, (int)tex.Height, out data);
+        Bitmap btm = Ftex.GetBitmap(Ftex.ConvertBgraToRgba(data), (int)tex.Width, (int)tex.Height);
+
+        btm.Save($"{outFolder}\\Textures\\{resFile.Value.Name}.jpg");
+
     }));
 }
 
