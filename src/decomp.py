@@ -87,14 +87,23 @@ async def byml(file: Path, out: Path):
 
 async def havok(file: Path, out: Path):
     """Decompile a havok file"""
-
-    hk = Havok.from_file(file)
-    hk.deserialize()
-    hk.to_json(Path(out, ".json"))
+    try:
+        hk = Havok.from_file(file)
+        hk.deserialize()
+        hk.to_json(Path(out, ".json"))
+    except RuntimeError as ex:
+        error(f"[HAVOK] {ex}")
 
 
 async def msbt(file: Path, out: Path):
     """Decompile a msbt file"""
+
+    try:
+        subprocess.check_call(
+            [".\\lib\\Msyt.exe", "export", f"-o", f"{out}.yml", f"{file}"]
+        )
+    except RuntimeError as ex:
+        error(f"[MSBT] {ex}")
 
 
 async def sarc(file: Path, out: Path):
