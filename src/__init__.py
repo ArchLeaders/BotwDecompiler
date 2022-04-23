@@ -42,9 +42,6 @@ async def main():
             # get output path
             out_file = f"{out}\\{key}"
 
-            if not Path(out_file).is_dir():
-                os.makedirs(out_file)
-
             out_file = str(file).replace(str(dir), str(out_file))
 
             if ext in exts.BARS_EXT:
@@ -55,6 +52,21 @@ async def main():
 
             elif ext in exts.BFRES_EXT:
                 tasks.append(asyncio.create_task(decomp.bfres(file, out_file)))
+
+            elif ext in util.BYML_EXTS:
+                tasks.append(asyncio.create_task(decomp.byml(file, out_file)))
+
+            elif ext in exts.HK_EXT:
+                tasks.append(asyncio.create_task(decomp.havok(file, out_file)))
+
+            elif ext in exts.MSBT_EXT:
+                tasks.append(asyncio.create_task(decomp.msbt(file, out_file)))
+
+            elif ext in util.SARC_EXTS:
+                tasks.append(asyncio.create_task(decomp.sarc(file, out_file)))
+
+            else:
+                tasks.append(asyncio.create_task(decomp.copy(file, out_file)))
 
     asyncio.gather(*tasks)
 
