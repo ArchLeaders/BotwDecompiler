@@ -10,16 +10,16 @@ from pathlib import Path
 from utils import error
 
 
-async def aamp(file: Path, out: Path):
+def aamp(file: Path, out: Path):
     """Decompile an aamp file"""
 
     try:
         data = file.read_bytes()
 
-        if data[0 - 4] == b"Yaz0":
+        if data[0:4] == b"Yaz0":
             data = oead.yaz0.decompress(data)
 
-        if data[0 - 4] != b"AAMP":
+        if data[0:4] != b"AAMP":
             error(
                 f"[WARNING] Could not decompile '{file}' because it was not a valid AAMP file!"
             )
@@ -30,13 +30,13 @@ async def aamp(file: Path, out: Path):
         data = oead.aamp.ParameterIO.from_binary(data)
         data = oead.aamp.ParameterIO.to_text(data)
 
-        Path(out, ".yml").write_text(data)
+        Path(f"{out}.yml").write_text(data)
 
     except RuntimeError as ex:
         error(f"[AAMP] {ex}")
 
 
-async def bars(file: Path, out: Path):
+def bars(file: Path, out: Path):
     """Decompile a bars file"""
 
     from imported.bars_extractor import extract
@@ -48,7 +48,7 @@ async def bars(file: Path, out: Path):
         error(f"[BARS] {ex}")
 
 
-async def evfl(file: Path, out: Path):
+def evfl(file: Path, out: Path):
     """Decompile a bfevfl file"""
 
     from imported.evfl_to_json import convert
@@ -60,7 +60,7 @@ async def evfl(file: Path, out: Path):
         error(f"[EVFL] {ex}")
 
 
-async def bfres(file: Path, out: Path):
+def bfres(file: Path, out: Path):
     """Decompile a bfres file"""
 
     try:
@@ -70,16 +70,16 @@ async def bfres(file: Path, out: Path):
         error(f"[BFRES] {ex}")
 
 
-async def byml(file: Path, out: Path):
+def byml(file: Path, out: Path):
     """Decompile a byml file"""
 
     try:
         data = file.read_bytes()
 
-        if data[0 - 4] == b"Yaz0":
+        if data[0:4] == b"Yaz0":
             data = oead.yaz0.decompress(data)
 
-        if data[0 - 2] != b"BY" and data[0 - 2] != b"YB":
+        if data[0:2] != b"BY" and data[0:2] != b"YB":
             error(
                 f"[WARNING] Could not decompile '{file}' because it was not a valid BYML file!"
             )
@@ -88,26 +88,26 @@ async def byml(file: Path, out: Path):
         cdir(out)
 
         data = oead.byml.from_binary(data)
-        data = oead.aamp.to_text(data)
+        data = oead.byml.to_text(data)
 
-        Path(out, ".yml").write_text(data)
+        Path(f"{out}.yml").write_text(data)
 
     except RuntimeError as ex:
         error(f"[BYML] {ex}")
 
 
-async def havok(file: Path, out: Path):
+def havok(file: Path, out: Path):
     """Decompile a havok file"""
     try:
         cdir(out)
         hk = Havok.from_file(file)
         hk.deserialize()
-        hk.to_json(Path(out, ".json"))
+        hk.to_json(Path(f"{out}.json"))
     except RuntimeError as ex:
         error(f"[HAVOK] {ex}")
 
 
-async def msbt(file: Path, out: Path):
+def msbt(file: Path, out: Path):
     """Decompile a msbt file"""
 
     try:
@@ -119,73 +119,84 @@ async def msbt(file: Path, out: Path):
         error(f"[MSBT] {ex}")
 
 
-async def sarc(file: Path, out: Path):
+def sarc(file: Path, out: Path):
     """Decompile a sarc file"""
 
     try:
+
         data = file.read_bytes()
 
-        if data[0 - 4] == b"Yaz0":
+        if data == None or len(data) < 4:
+            error(
+                f"[WARNING] Could not decompile '{file}' because it was not a valid SARC file!"
+            )
+            return
+
+        if data[0:4] == b"Yaz0":
             data = oead.yaz0.decompress(data)
 
-        if data[0 - 4] != b"SARC":
+        if data[0:4] != b"SARC":
             error(
                 f"[WARNING] Could not decompile '{file}' because it was not a valid SARC file!"
             )
             return
 
         cdir(out)
+
         data = oead.Sarc(data)
+        tasks = []
+
+        for sfile in data.get_files():
+
+            is_del: bool = True
+            out_file = Path(out, sfile.name)
+
+            cdir(out_file)
+
+            ext = out_file.suffix
+            out_file.write_bytes(sfile.data)
+
+            if ext in exts.BARS_EXT:
+                tasks.append(asyncio.create_task(bars(out_file, out_file)))
+            elif ext in exts.BFEVFL_EXT:
+                tasks.append(asyncio.create_task(evfl(out_file, out_file)))
+            elif ext in exts.BFRES_EXT:
+                tasks.append(asyncio.create_task(bfres(out_file, out_file)))
+            elif ext in util.BYML_EXTS:
+                tasks.append(asyncio.create_task(byml(out_file, out_file)))
+            elif ext in exts.HK_EXT:
+                tasks.append(asyncio.create_task(havok(out_file, out_file)))
+            elif ext in exts.MSBT_EXT:
+                tasks.append(asyncio.create_task(msbt(out_file, out_file)))
+            elif ext in util.SARC_EXTS:
+                tasks.append(asyncio.create_task(sarc(out_file, out_file)))
+            else:
+                is_del = False
+
+            if is_del:
+                out_file.unlink()
+
+        asyncio.gather(*tasks)
 
     except RuntimeError as ex:
         error(f"[MSBT] {ex}")
 
-    tasks = []
 
-    for sfile in data.get_files():
-
-        is_del: bool = True
-        out_file = Path(out, sfile)
-        ext = out_file.suffix
-        cdir(out_file)
-
-        if ext in exts.BARS_EXT:
-            tasks.append(asyncio.create_task(bars(file, out_file)))
-        elif ext in exts.BFEVFL_EXT:
-            tasks.append(asyncio.create_task(evfl(file, out_file)))
-        elif ext in exts.BFRES_EXT:
-            tasks.append(asyncio.create_task(bfres(file, out_file)))
-        elif ext in util.BYML_EXTS:
-            tasks.append(asyncio.create_task(byml(file, out_file)))
-        elif ext in exts.HK_EXT:
-            tasks.append(asyncio.create_task(havok(file, out_file)))
-        elif ext in exts.MSBT_EXT:
-            tasks.append(asyncio.create_task(msbt(file, out_file)))
-        elif ext in util.SARC_EXTS:
-            tasks.append(asyncio.create_task(sarc(file, out_file)))
-        else:
-            tasks.append(asyncio.create_task(copy(file, out_file)))
-            is_del = False
-
-        if is_del:
-            out_file.unlink()
-
-    asyncio.gather(*tasks)
-
-
-async def copy(file: Path, out: Path):
+def copy(file: Path, out: Path):
 
     try:
 
         data = file.read_bytes()
         cdir(out)
-        out.write_bytes(data)
+        Path(out).write_bytes(data)
+
+        print(f"[COPY] {os.path.basename(file)}")
 
     except RuntimeError as ex:
         error(f"[MSBT] {ex}")
 
 
-async def cdir(out: Path, is_archive: bool = False):
+def cdir(out: Path, is_archive: bool = False):
 
     if is_archive:
         os.makedirs(out, exist_ok=True)
