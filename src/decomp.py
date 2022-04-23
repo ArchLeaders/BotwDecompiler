@@ -63,6 +63,26 @@ async def bfres(file: Path, out: Path):
 async def byml(file: Path, out: Path):
     """Decompile a byml file"""
 
+    try:
+        data = file.read_bytes()
+
+        if data[0 - 4] == b"Yaz0":
+            data = oead.yaz0.decompress(data)
+
+        if data[0 - 2] != b"BY" and data[0 - 2] != b"YB":
+            error(
+                f"[WARNING] Could not decompile '{file}' because it was not a valid BYML file!"
+            )
+            return
+
+        data = oead.byml.from_binary(data)
+        data = oead.aamp.to_text(data)
+
+        Path(out, ".yml").write_text(data)
+
+    except RuntimeError as ex:
+        error(f"[BYML] {ex}")
+
 
 async def havok(file: Path, out: Path):
     """Decompile a havok file"""
