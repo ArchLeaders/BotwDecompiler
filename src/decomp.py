@@ -1,6 +1,7 @@
 import subprocess
 import oead
 
+from botw_havok import Havok
 from pathlib import Path
 from utils import error
 
@@ -86,6 +87,10 @@ async def byml(file: Path, out: Path):
 
 async def havok(file: Path, out: Path):
     """Decompile a havok file"""
+
+    hk = Havok.from_file(file)
+    hk.deserialize()
+    hk.to_json(Path(out, ".json"))
 
 
 async def msbt(file: Path, out: Path):
