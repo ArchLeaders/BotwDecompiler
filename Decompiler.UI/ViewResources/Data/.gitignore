@@ -1,0 +1,2 @@
+﻿# ignore auth files
+*.auth.cs
