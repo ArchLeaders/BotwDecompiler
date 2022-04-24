@@ -7,6 +7,7 @@
 src/decompiled/
 src/decompiled_bta/
 *.bin
+*.auth.cs
 
 # User-specific files
 *.rsuser
