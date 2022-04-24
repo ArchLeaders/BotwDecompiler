@@ -109,7 +109,7 @@ def havok(data: bytes, out: Path):
         cdir(out)
         hk = Havok.from_bytes(data)
         hk.deserialize()
-        hk.to_json(Path(f"{out}.json"))
+        hk.to_json(Path(f"{out}.json"), True)
 
         print("[HAVOK] Decompiled havok file from memory")
 
