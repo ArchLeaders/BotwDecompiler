@@ -22,7 +22,7 @@ ResFile res = Bfres.LoadBfres(path);
 SortedDictionary<string, dynamic> bfresJson = new();
 List<Task> tasks = new();
 
-Console.WriteLine("[BFRES] Set meta data");
+Console.WriteLine($"[BFRES] {res.Name}: Set meta data");
 
 bfresJson.Add("Alignment", res.Alignment);
 bfresJson.Add("ByteOrder", $"{res.ByteOrder}");
@@ -128,17 +128,26 @@ foreach (var resFile in res.Textures)
     tasks.Add(Task.Run(() =>
     {
         // Export PNG
-        Texture tex = (Texture)resFile.Value;
-        Directory.CreateDirectory($"{outFolder}\\Textures");
+        try
+        {
+            Texture tex = (Texture)resFile.Value;
+            Directory.CreateDirectory($"{outFolder}\\Textures");
         
-        AddGeneric("Textures", resFile.Value.Name);
+            AddGeneric("Textures", resFile.Value.Name);
 
-        byte[] data = new byte[0];
+            byte[] data = new byte[0];
 
-        DirectXTexLibrary.TextureDecoder.Decode(tex.Format.GetDXGI(), tex.GetDeswizzledData(0, 0), (int)tex.Width, (int)tex.Height, out data);
-        Bitmap btm = Ftex.GetBitmap(Ftex.ConvertBgraToRgba(data), (int)tex.Width, (int)tex.Height);
+            DirectXTexLibrary.TextureDecoder.Decode(tex.Format.GetDXGI(), tex.GetDeswizzledData(0, 0), (int)tex.Width, (int)tex.Height, out data);
+            Bitmap btm = Ftex.GetBitmap(Ftex.ConvertBgraToRgba(data), (int)tex.Width, (int)tex.Height);
 
-        btm.Save($"{outFolder}\\Textures\\{resFile.Value.Name}.jpg");
+            btm.Save($"{outFolder}\\Textures\\{resFile.Value.Name}.jpg");
+        }
+        catch (Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine($"[BFRES] [TEXTURES] Could not decode {resFile.Value.Name}");
+            Console.ResetColor();
+        }
 
     }));
 }
