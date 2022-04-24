@@ -6,6 +6,7 @@
 # Ignore tests
 src/decompiled/
 src/decompiled_bta/
+*.bin
 
 # User-specific files
 *.rsuser
