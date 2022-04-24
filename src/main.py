@@ -1,3 +1,21 @@
+# Formats to decompile (applies to file inside SARC archives as well) | Default is COPY, unless false
+
+import yaml
+
+conf = {}
+with open(".\\config.yml") as fs:
+    conf = yaml.load(fs)
+
+AAMP: conf["aamp"]  # Decompile AAMP to YAML
+BARS: conf["bars"]  # Decompile BARS to Folder<Binary>
+EVFL: conf["evfl"]  # Decompile EVFL to JSON
+FRES: conf["fres"]  # Decompile FRES to Folder<Binary>
+BYML: conf["byml"]  # Decompile BYML to YAML
+HAVK: conf["havk"]  # Decompile Havok to JSON
+MSBT: conf["msbt"]  # Decompile MSBT to YAML
+SARC: conf["sarc"]  # Decompile SARC to Folder<Decompiled>
+COPY: conf["copy"]  # Copy Binary to Out<Binary>
+
 import decomp
 import os
 import sys
@@ -7,10 +25,9 @@ from bcml import util
 from pathlib import Path
 from utils import error
 
-out = ".\\decompiled"
-
+out = conf["out_folder"]
 if len(sys.argv) >= 2:
-    out = sys.argv[2]
+    out = sys.argv[1]
 
 if not Path(out).is_dir():
     os.makedirs(out)
