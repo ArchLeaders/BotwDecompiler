@@ -1,0 +1,30 @@
+<SyntaxDefinition xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008" name="Xml">
+   <RuleSet>
+        <Span foreground="#8C8C8C" fontStyle="italic">
+            <Begin>&lt;!--</Begin>
+            <End>--&gt;</End>
+        </Span>
+
+        <Rule foreground="#919191">
+            [/&lt;&gt;=:]
+        </Rule>
+
+        <Span foreground="#143587">
+            <Begin>&quot;</Begin>
+            <End>&quot;</End>
+            <RuleSet>
+                <Rule foreground="#FFD68F">
+                    \\n
+                </Rule>
+            </RuleSet>
+        </Span>
+
+        <Rule foreground="#479DD6">
+            ([^\s])*.=
+        </Rule>
+
+		<Rule foreground="#1f1f1f">
+			[A-z]
+		</Rule>
+   </RuleSet>
+</SyntaxDefinition>

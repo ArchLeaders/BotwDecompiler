@@ -1,0 +1,65 @@
+<SyntaxDefinition xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008" name="YAML">
+
+	<!--  This is the main ruleset.  -->
+	<RuleSet>
+		<Keywords foreground="#1f1f1f">
+			<Word>-</Word>
+			<Word>:</Word>
+			<Word>{</Word>
+			<Word>}</Word>
+			<Word>,</Word>
+		</Keywords>
+
+		<Rule foreground="#DF6A6C">
+			(?i)red
+		</Rule>
+
+		<Rule foreground="#5ECFDF">
+			(?i)blue
+		</Rule>
+
+		<Span foreground="#B34700">
+			<Begin>&quot;</Begin>
+			<End>&quot;</End>
+			<RuleSet>
+				<Rule foreground="#A67900">
+					\\n
+				</Rule>
+			</RuleSet>
+		</Span>
+
+		<Span foreground="#368C7B" fontStyle="italic">
+			<!--368C7B-->
+			<Begin>!</Begin>
+			<End>\s</End>
+		</Span>
+
+		<Rule foreground="#0E34A8">
+			([^\t -]).+?(?=:)
+		</Rule>
+
+		<Keywords foreground="#0E34A8">
+			<Word>true</Word>
+			<Word>false</Word>
+		</Keywords>
+
+		<Rule foreground="#A67900">
+			\\n
+		</Rule>
+
+		<!--  Digits  -->
+		<Rule foreground="#53A80D">
+			\b0[xX][0-9a-fA-F]+  # hex number
+			|    \b
+			(    \d+(\.[0-9]+)?   #number with optional floating point
+			|    \.[0-9]+         #or just starting with floating point
+			)
+			([eE][+-]?[0-9]+)? # optional exponent
+		</Rule>
+
+		<Rule foreground="#B34700">
+			[A-z]
+		</Rule>
+
+	</RuleSet>
+</SyntaxDefinition>
