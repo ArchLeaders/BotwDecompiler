@@ -1,4 +1,3 @@
-import asyncio
 import json
 import subprocess
 import oead
@@ -15,22 +14,18 @@ from zlib import crc32
 def aamp(data: bytes, out: Path):
     """Decompile an aamp file"""
 
-    try:
-        if data[0:4] != b"AAMP":
-            error(f"[WARNING] Could not decompile AAMP file!")
-            return
+    if data[0:4] != b"AAMP":
+        error(f"[WARNING] Could not decompile AAMP file!")
+        return
 
-        cdir(out)
+    cdir(out)
 
-        data = oead.aamp.ParameterIO.from_binary(data)
-        data = oead.aamp.ParameterIO.to_text(data)
+    data = oead.aamp.ParameterIO.from_binary(data)
+    data = oead.aamp.ParameterIO.to_text(data)
 
-        Path(f"{out}.yml").write_bytes(str(data).encode())
+    Path(f"{out}.yml").write_bytes(str(data).encode())
 
-        print("[AAMP] Decompiled aamp file from memory")
-
-    except RuntimeError as ex:
-        error(f"[AAMP] {ex}")
+    print("[AAMP] Decompiled aamp file from memory")
 
 
 def bars(file: Path, out: Path):
@@ -38,11 +33,8 @@ def bars(file: Path, out: Path):
 
     from imported.bars_extractor import extract
 
-    try:
-        cdir(out, True)
-        extract(file, out)
-    except RuntimeError as ex:
-        error(f"[BARS] {ex}")
+    cdir(out, True)
+    extract(file, out)
 
 
 def evfl(data: bytes, out: Path):
@@ -50,117 +42,85 @@ def evfl(data: bytes, out: Path):
 
     from imported.evfl_to_json import convert
 
-    try:
-        cdir(out)
+    cdir(out)
 
-        out = Path(f"{out}.json")
+    out = Path(f"{out}.json")
 
-        flow: EventFlow = EventFlow()
-        flow.read(data)
+    flow: EventFlow = EventFlow()
+    flow.read(data)
 
-        out.write_bytes(
-            json.dumps(
-                generate_flowchart_graph(flow),
-                indent=4,
-                default=lambda x: str(x),
-            ).encode()
-        )
+    out.write_bytes(
+        json.dumps(
+            generate_flowchart_graph(flow),
+            indent=4,
+            default=lambda x: str(x),
+        ).encode()
+    )
 
-        print("[EVFL] Decompiled event flow file from memory")
-
-    except RuntimeError as ex:
-        error(f"[EVFL] {ex}")
+    print("[EVFL] Decompiled event flow file from memory")
 
 
 def fres(file: Path, out: Path):
     """Decompile a bfres file"""
 
-    try:
-        cdir(out, True)
-        subprocess.check_call([".\\lib\\DecompileBfres.exe", f"{file}", f"{out}"])
-    except RuntimeError as ex:
-        error(f"[BFRES] {ex}")
+    cdir(out, True)
+    subprocess.check_call([".\\lib\\DecompileBfres.exe", f"{file}", f"{out}"])
 
 
 def byml(data: bytes, out: Path):
     """Decompile a byml file"""
 
-    try:
-        if data[0:2] != b"BY" and data[0:2] != b"YB":
-            error(f"[WARNING] Could not decompile BYML file!")
-            return
+    if data[0:2] != b"BY" and data[0:2] != b"YB":
+        error(f"[WARNING] Could not decompile BYML file!")
+        return
 
-        cdir(out)
+    cdir(out)
 
-        data = oead.byml.from_binary(data)
-        data = oead.byml.to_text(data)
+    data = oead.byml.from_binary(data)
+    data = oead.byml.to_text(data)
 
-        Path(f"{out}.yml").write_bytes(str(data).encode())
+    Path(f"{out}.yml").write_bytes(str(data).encode())
 
-        print("[BYML] Decompiled binary yaml file from memory")
-
-    except RuntimeError as ex:
-        error(f"[BYML] {ex}")
+    print("[BYML] Decompiled binary yaml file from memory")
 
 
 def havok(data: bytes, out: Path):
     """Decompile a havok file"""
-    try:
-        cdir(out)
-        hk = Havok.from_bytes(data)
-        hk.deserialize()
-        hk.to_json(Path(f"{out}.json"), True)
 
-        print("[HAVOK] Decompiled havok file from memory")
+    cdir(out)
+    hk = Havok.from_bytes(data)
+    hk.deserialize()
+    hk.to_json(Path(f"{out}.json"), True)
 
-    except RuntimeError as ex:
-        error(f"[HAVOK] {ex}")
+    print("[HAVOK] Decompiled havok file from memory")
 
 
 def msbt(file: Path, out: Path):
     """Decompile a msbt file"""
 
-    try:
-        cdir(out)
-        print(f"[MSBT] [SHELL] Decompile {file.stem}")
-        subprocess.check_call([".\\lib\\Msyt.exe", "export", f"-o", out, f"{file}"])
-    except RuntimeError as ex:
-        error(f"[MSBT] {ex}")
+    cdir(out)
+    print(f"[MSBT] [SHELL] Decompile {file.stem}")
+    subprocess.check_call([".\\lib\\Msyt.exe", "export", f"-o", out, f"{file}"])
 
 
 def sarc(data: bytes, out: Path):
     """Decompile a sarc file"""
 
-    try:
+    print("[SARC] Parsing sarc archive from memory...")
 
-        print("[SARC] Parsing sarc archive from memory...")
+    # create Sarc
+    data = oead.Sarc(data)
 
-        # create Sarc
-        data = oead.Sarc(data)
+    for sfile in data.get_files():
 
-        for sfile in data.get_files():
+        sdata = bytes(sfile.data)
+        out_file = Path(out, sfile.name)
+        temp_file = Path(out, f"{sfile.name}.temp")
 
-            sdata = bytes(sfile.data)
-            out_file = Path(out, sfile.name)
-            temp_file = Path(out, f"{sfile.name}.temp")
+        cdir(out_file)
+        ead(sdata, out_file)
 
-            cdir(out_file)
-
-            if (
-                sdata[0:8] == b"\x4D\x73\x67\x53\x74\x64\x42\x6E"
-                or sdata[0:4] == b"FRES"
-                or sdata[0:4] == b"BARS"
-            ):
-                temp_file.write_bytes(sdata)
-                ead(temp_file, out_file)
-                temp_file.unlink()
-            else:
-                ead(sdata, out_file)
-
-        print("[SARC] Parsed sarc in memory")
-
-    except RuntimeError as ex:
-        error(f"[SARC] {ex}")
+    print("[SARC] Parsed sarc in memory")
 
 
 def ead(file: bytes or Path, out: Path):
@@ -185,6 +145,7 @@ def ead(file: bytes or Path, out: Path):
         if type(file) != bytes:
             bars(file, out)
         else:
+            cdir(temp)
             temp.write_bytes(data)
             bars(temp, out)
             temp.unlink()
@@ -193,10 +154,10 @@ def ead(file: bytes or Path, out: Path):
         evfl(data, out)
 
     elif data[0:4] == b"FRES":
-        return  # break for testing
         if type(file) != bytes:
             fres(file, out)
         else:
+            cdir(temp)
             temp.write_bytes(data)
             fres(temp, out)
             temp.unlink()
@@ -211,6 +172,7 @@ def ead(file: bytes or Path, out: Path):
         if type(file) != bytes:
             msbt(file, out)
         else:
+            cdir(temp)
             temp.write_bytes(data)
             msbt(temp, out)
             temp.unlink()
@@ -222,20 +184,6 @@ def ead(file: bytes or Path, out: Path):
         cdir(out)
         print(f"[WRITE] {os.path.basename(out)}")
         out.write_bytes(data)
-
-
-def copy(file: Path, out: Path):
-
-    try:
-
-        data = file.read_bytes()
-        cdir(out)
-        Path(out).write_bytes(data)
-
-        print(f"[COPY] {os.path.basename(file)}")
-
-    except RuntimeError as ex:
-        error(f"[COPY] {ex}")
 
 
 def cdir(out: Path, is_archive: bool = False):
