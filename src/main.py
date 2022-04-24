@@ -1,9 +1,11 @@
 import decomp
-import sys
 import os
+import sys
+import time
 
 from bcml import util
 from pathlib import Path
+from utils import error
 
 out = ".\\decompiled"
 
@@ -18,13 +20,15 @@ is_nx: bool = util.get_settings("wiiu")
 dirs = {
     "game": util.get_game_dir(),
     "update": util.get_update_dir(),
-    "dlc": f"{util.get_aoc_dir()}..\\",
+    "dlc": Path(util.get_aoc_dir(), "..\\"),
 }
 
 
 def main():
 
     print("Scanning source files...")
+
+    start_time = time.time()
 
     for key, dir in dirs.items():
         for file in Path(dir).glob("**/*.*"):
@@ -45,8 +49,13 @@ def main():
             with open(file, "rb") as fs:
                 try:
                     decomp.ead(fs.read(), Path(out_file))
-                except RuntimeError as ex:
-                    print(ex)
+                except Exception as ex:
+                    error(f"[ERROR] [{file.stem}] {ex}")
+                    pass
+
+    end_time = time.time()
+    sec = end_time - start_time
+    print(f"BOTW Decompiled in {sec} seconds.")
 
 
 if __name__ == "__main__":
