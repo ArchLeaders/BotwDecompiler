@@ -40,8 +40,6 @@ def bars(file: Path, out: Path):
 def evfl(data: bytes, out: Path):
     """Decompile a bfevfl file"""
 
-    from imported.evfl_to_json import convert
-
     cdir(out)
 
     out = Path(f"{out}.json")
