@@ -6,6 +6,7 @@ import os
 from botw_havok import Havok
 from evfl import EventFlow
 from evfl.repr_util import generate_flowchart_graph
+from main import AAMP, BARS, EVFL, FRES, BYML, HAVK, MSBT, SARC, COPY
 from pathlib import Path, WindowsPath
 from utils import error
 from zlib import crc32
@@ -136,10 +137,10 @@ def ead(file: bytes or Path, out: Path):
     if data[0:4] == b"Yaz0":
         data = oead.yaz0.decompress(data)
 
-    if data[0:4] == b"AAMP":
+    if data[0:4] == b"AAMP" and AAMP == True:
         aamp(data, out)
 
-    elif data[0:4] == b"BARS":
+    elif data[0:4] == b"BARS" and BARS == True:
         if type(file) != bytes:
             bars(file, out)
         else:
@@ -148,10 +149,10 @@ def ead(file: bytes or Path, out: Path):
             bars(temp, out)
             temp.unlink()
 
-    elif data[0:6] == b"BFEVFL":
+    elif data[0:6] == b"BFEVFL" and EVFL == True:
         evfl(data, out)
 
-    elif data[0:4] == b"FRES":
+    elif data[0:4] == b"FRES" and FRES == True:
         if type(file) != bytes:
             fres(file, out)
         else:
@@ -160,13 +161,13 @@ def ead(file: bytes or Path, out: Path):
             fres(temp, out)
             temp.unlink()
 
-    elif data[0:2] == b"BY" or data[0:2] == b"YB":
+    elif data[0:2] == b"BY" or data[0:2] == b"YB" and BYML == True:
         byml(data, out)
 
-    elif data[0:8] == b"\x57\xE0\xE0\x57\x10\xC0\xC0\x10":
+    elif data[0:8] == b"\x57\xE0\xE0\x57\x10\xC0\xC0\x10" and HAVK == True:
         havok(data, out)
 
-    elif data[0:8] == b"\x4D\x73\x67\x53\x74\x64\x42\x6E":
+    elif data[0:8] == b"\x4D\x73\x67\x53\x74\x64\x42\x6E" and MSBT == True:
         if type(file) != bytes:
             msbt(file, out)
         else:
@@ -175,10 +176,10 @@ def ead(file: bytes or Path, out: Path):
             msbt(temp, out)
             temp.unlink()
 
-    elif data[0:4] == b"SARC":
+    elif data[0:4] == b"SARC" and SARC == True:
         sarc(data, out)
 
-    else:
+    elif COPY == True:
         cdir(out)
         print(f"[WRITE] {os.path.basename(out)}")
         out.write_bytes(data)
