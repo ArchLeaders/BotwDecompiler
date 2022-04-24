@@ -1,0 +1,10 @@
+aamp: True
+bars: True
+evfl: True
+fres: True
+byml: True
+havk: True
+msbt: True
+sarc: True
+copy: True
+out_folder: .\decompiled
