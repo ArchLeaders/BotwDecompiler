@@ -4,17 +4,7 @@ import yaml
 
 conf = {}
 with open(".\\config.yml") as fs:
-    conf = yaml.load(fs)
-
-AAMP: conf["aamp"]  # Decompile AAMP to YAML
-BARS: conf["bars"]  # Decompile BARS to Folder<Binary>
-EVFL: conf["evfl"]  # Decompile EVFL to JSON
-FRES: conf["fres"]  # Decompile FRES to Folder<Binary>
-BYML: conf["byml"]  # Decompile BYML to YAML
-HAVK: conf["havk"]  # Decompile Havok to JSON
-MSBT: conf["msbt"]  # Decompile MSBT to YAML
-SARC: conf["sarc"]  # Decompile SARC to Folder<Decompiled>
-COPY: conf["copy"]  # Copy Binary to Out<Binary>
+    conf = yaml.safe_load(fs)
 
 import decomp
 import os
@@ -65,7 +55,7 @@ def main():
             # print(f"open<{os.path.basename(file)}>")
             with open(file, "rb") as fs:
                 try:
-                    decomp.ead(fs.read(), Path(out_file))
+                    decomp.ead(fs.read(), Path(out_file), conf)
                 except Exception as ex:
                     error(f"[ERROR] [{file.stem}] {ex}")
                     pass
