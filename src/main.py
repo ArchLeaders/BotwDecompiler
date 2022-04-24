@@ -1,14 +1,11 @@
-import asyncio
-import os
-import sys
-import oead
-import exts
 import decomp
+import sys
+import os
 
 from bcml import util
 from pathlib import Path
 
-out = ".\\decompiled_bta"
+out = ".\\decompiled"
 
 if len(sys.argv) >= 2:
     out = sys.argv[2]
@@ -25,11 +22,9 @@ dirs = {
 }
 
 
-async def main():
+def main():
 
     print("Scanning source files...")
-
-    tasks = []
 
     for key, dir in dirs.items():
         for file in Path(dir).glob("**/*.*"):
@@ -45,17 +40,14 @@ async def main():
             out_file = f"{out}\\{key}"
             out_file = str(file).replace(str(dir), out_file)
 
-            # add handle tasks
-            # tasks.append(asyncio.create_task(decomp.ead(file, out_file)))
-
             # handle task
             # print(f"open<{os.path.basename(file)}>")
             with open(file, "rb") as fs:
-                decomp.ead(fs.read(), Path(out_file))
-
-    # await all tasks
-    # asyncio.gather(*tasks)
+                try:
+                    decomp.ead(fs.read(), Path(out_file))
+                except RuntimeError as ex:
+                    print(ex)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
