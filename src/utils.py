@@ -4,7 +4,7 @@ from pathlib import Path
 
 def error(msg: str):
     print(msg)
-    log_file = Path(".\\errno.log")
+    log_file = Path(".\\error.log")
 
     log = ""
     if log_file.is_file():
