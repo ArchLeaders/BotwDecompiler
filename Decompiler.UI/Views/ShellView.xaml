@@ -92,11 +92,21 @@
                         Content="Browse" />
             </Grid>
 
-            <Button Width="100"
-                    Margin="0,10,0,0"
-                    HorizontalAlignment="Right"
-                    Click="{s:Action Decompile}"
-                    Content="Decompile" />
+            <Grid Margin="0,10,0,0">
+                <Button Width="100"
+                        HorizontalAlignment="Right"
+                        Click="{s:Action Decompile}"
+                        Content="Decompile"
+                        IsEnabled="{Binding IsEnabled}" />
+
+                <CheckBox Width="145"
+                          Padding="5,0,0,2"
+                          HorizontalAlignment="Left"
+                          Content="Decompile Silently"
+                          IsChecked="{Binding Silent}"
+                          Style="{DynamicResource MaterialDesignAccentCheckBox}" />
+            </Grid>
+
         </StackPanel>
 
         <ContentControl x:Name="settings"
