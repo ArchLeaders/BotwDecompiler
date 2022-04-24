@@ -7,4 +7,4 @@ havk: True
 msbt: True
 sarc: True
 copy: True
-out_folder: .\decompiled
+out_folder: '.\decompiled'
