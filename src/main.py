@@ -21,7 +21,7 @@ is_nx: bool = util.get_settings("wiiu")
 dirs = {
     "game": util.get_game_dir(),
     "update": util.get_update_dir(),
-    "dlc": util.get_aoc_dir(),
+    "dlc": f"{util.get_aoc_dir()}..\\",
 }
 
 
@@ -29,7 +29,7 @@ async def main():
 
     print("Scanning source files...")
 
-    # tasks = []
+    tasks = []
 
     for key, dir in dirs.items():
         for file in Path(dir).glob("**/*.*"):
@@ -43,35 +43,17 @@ async def main():
 
             # get output path
             out_file = f"{out}\\{key}"
+            out_file = str(file).replace(str(dir), out_file)
 
-            out_file = str(file).replace(str(dir), str(out_file))
+            # add handle tasks
+            # tasks.append(asyncio.create_task(decomp.ead(file, out_file)))
 
-            # print(f"await::<{file}>")
+            # handle task
+            # print(f"open<{os.path.basename(file)}>")
+            with open(file, "rb") as fs:
+                decomp.ead(fs.read(), Path(out_file))
 
-            if ext in exts.BARS_EXT:
-                decomp.bars(file, out_file)
-
-            elif ext in exts.BFEVFL_EXT:
-                decomp.evfl(file, out_file)
-
-            elif ext in exts.BFRES_EXT:
-                decomp.bfres(file, out_file)
-
-            elif ext in exts.BYML_EXTS:
-                decomp.byml(file, out_file)
-
-            elif ext in exts.HK_EXT:
-                decomp.havok(file, out_file)
-
-            elif ext in exts.MSBT_EXT:
-                decomp.msbt(file, out_file)
-
-            elif ext in exts.SARC_EXTS:
-                decomp.sarc(file, out_file)
-
-            else:
-                decomp.copy(file, out_file)
-
+    # await all tasks
     # asyncio.gather(*tasks)
 
 
