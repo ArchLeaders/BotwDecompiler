@@ -4,6 +4,7 @@ using Stylet;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Threading;
@@ -36,36 +37,59 @@ namespace Decompiler.UI.ViewModels
 
         public async void Decompile()
         {
-            string temp = $"{Environment.GetEnvironmentVariable("%temp%")}\\botw_decomp";
+            string temp = $"{Environment.GetEnvironmentVariable("temp")}\\botw_decomp";
             string repo = "https://raw.githubusercontent.com/ArchLeaders/BotwDecompiler/master/src";
 
+            try
+            {
+                IsEnabled = false;
 
-            List<Task> tasks = new();
+                List<Task> tasks = new();
 
-            tasks.Add(new Uri($"{repo}/main.py").DownloadFile($"{temp}\\main.py", true));
-            tasks.Add(new Uri($"{repo}/decomp.py").DownloadFile($"{temp}\\decomp.py", true));
-            tasks.Add(new Uri($"{repo}/exts.py").DownloadFile($"{temp}\\exts.py", true));
-            tasks.Add(new Uri($"{repo}/utils.py").DownloadFile($"{temp}\\utils.py", true));
-            tasks.Add(new Uri($"{repo}/lib.zip").DownloadFile($"{temp}\\lib.zip", true));
-            tasks.Add(new Uri($"{repo}/imported/bars_extractor.py").DownloadFile($"{temp}\\imported\\bars_extractor.py", true));
+                tasks.Add(new Uri($"{repo}/main.py").DownloadFile($"{temp}\\main.py", true));
+                tasks.Add(new Uri($"{repo}/decomp.py").DownloadFile($"{temp}\\decomp.py", true));
+                tasks.Add(new Uri($"{repo}/exts.py").DownloadFile($"{temp}\\exts.py", true));
+                tasks.Add(new Uri($"{repo}/utils.py").DownloadFile($"{temp}\\utils.py", true));
+                tasks.Add(new Uri($"{repo}/lib.zip").DownloadFile($"{temp}\\lib.zip", true));
+                tasks.Add(new Uri($"{repo}/imported/bars_extractor.py").DownloadFile($"{temp}\\imported\\bars_extractor.py", true));
 
-            await Task.WhenAll(tasks);
-            await File.WriteAllTextAsync($"{temp}\\config.yml",
-                $"aamp: {AAMP}\n" +
-                $"bars: {BARS}\n" +
-                $"evfl: {EVFL}\n" +
-                $"fres: {FRES}\n" +
-                $"byml: {BYML}\n" +
-                $"havk: {HAVK}\n" +
-                $"msbt: {MSBT}\n" +
-                $"sarc: {SARC}\n" +
-                $"copy: {COPY}\n" +
-                $"out_folder: {ExportDir}\n"
-            );
+                await Task.WhenAll(tasks);
 
-            ZipFile.ExtractToDirectory($"{temp}\\lib.zip", $"{temp}\\lib", true);
+                await File.WriteAllTextAsync($"{temp}\\config.yml",
+                    $"aamp: {AAMP}\n" +
+                    $"bars: {BARS}\n" +
+                    $"evfl: {EVFL}\n" +
+                    $"fres: {FRES}\n" +
+                    $"byml: {BYML}\n" +
+                    $"havk: {HAVK}\n" +
+                    $"msbt: {MSBT}\n" +
+                    $"sarc: {SARC}\n" +
+                    $"copy: {COPY}\n" +
+                    $"out_folder: {ExportDir}"
+                );
 
-            await System.Operations.Execute.App("python.exe", $"\"{temp}\\main.py\" \"{ExportDir}\"");
+                ZipFile.ExtractToDirectory($"{temp}\\lib.zip", $"{temp}\\lib", true);
+
+                await System.Operations.Execute.App("cmd.exe", $"/k python main.py", hidden: Silent, workingDirectory: temp);
+
+                var _notifyIcon = new System.Windows.Forms.NotifyIcon();
+                _notifyIcon.Icon = Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
+                _notifyIcon.BalloonTipClosed += (s, e) => _notifyIcon.Visible = false;
+                _notifyIcon.Visible = true;
+                _notifyIcon.ShowBalloonTip(5000, "BOTW Asset Decompiler", "BOTW Decompiled has finished decompiling.", System.Windows.Forms.ToolTipIcon.Info);
+
+            }
+            catch (Exception ex)
+            {
+                IsEnabled = true;
+                ThrowException(new(this, "Unhandled Exception when Decompiling", ex.Message, ex.StackTrace));
+            }
+            finally
+            {
+                if (Directory.Exists(temp))
+                    Directory.Delete(temp, true);
+            }
+            
         }
 
         public void Browse()
@@ -159,6 +183,21 @@ namespace Decompiler.UI.ViewModels
         /// Bindings
         ///
         #region Bindings
+
+
+        private bool _isEnabled = true;
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+            set => SetAndNotify(ref _isEnabled, value);
+        }
+
+        private bool _silent = false;
+        public bool Silent
+        {
+            get => _silent;
+            set => SetAndNotify(ref _silent, value);
+        }
 
         private Visibility _handledExceptionViewVisibility = Visibility.Collapsed;
         public Visibility HandledExceptionViewVisibility
