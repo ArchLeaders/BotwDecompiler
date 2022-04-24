@@ -6,7 +6,6 @@ import os
 from botw_havok import Havok
 from evfl import EventFlow
 from evfl.repr_util import generate_flowchart_graph
-from main import AAMP, BARS, EVFL, FRES, BYML, HAVK, MSBT, SARC, COPY
 from pathlib import Path, WindowsPath
 from utils import error
 from zlib import crc32
@@ -122,7 +121,7 @@ def sarc(data: bytes, out: Path):
     print("[SARC] Parsed sarc in memory")
 
 
-def ead(file: bytes or Path, out: Path):
+def ead(file: bytes or Path, out: Path, conf: dict):
 
     data = b"\x00"
 
@@ -137,10 +136,10 @@ def ead(file: bytes or Path, out: Path):
     if data[0:4] == b"Yaz0":
         data = oead.yaz0.decompress(data)
 
-    if data[0:4] == b"AAMP" and AAMP == True:
+    if data[0:4] == b"AAMP" and conf["aamp"] == True:
         aamp(data, out)
 
-    elif data[0:4] == b"BARS" and BARS == True:
+    elif data[0:4] == b"BARS" and conf["bars"] == True:
         if type(file) != bytes:
             bars(file, out)
         else:
@@ -149,10 +148,10 @@ def ead(file: bytes or Path, out: Path):
             bars(temp, out)
             temp.unlink()
 
-    elif data[0:6] == b"BFEVFL" and EVFL == True:
+    elif data[0:6] == b"BFEVFL" and conf["evfl"] == True:
         evfl(data, out)
 
-    elif data[0:4] == b"FRES" and FRES == True:
+    elif data[0:4] == b"FRES" and conf["fres"] == True:
         if type(file) != bytes:
             fres(file, out)
         else:
@@ -161,13 +160,13 @@ def ead(file: bytes or Path, out: Path):
             fres(temp, out)
             temp.unlink()
 
-    elif data[0:2] == b"BY" or data[0:2] == b"YB" and BYML == True:
+    elif data[0:2] == b"BY" or data[0:2] == b"YB" and conf["byml"] == True:
         byml(data, out)
 
-    elif data[0:8] == b"\x57\xE0\xE0\x57\x10\xC0\xC0\x10" and HAVK == True:
+    elif data[0:8] == b"\x57\xE0\xE0\x57\x10\xC0\xC0\x10" and conf["havk"] == True:
         havok(data, out)
 
-    elif data[0:8] == b"\x4D\x73\x67\x53\x74\x64\x42\x6E" and MSBT == True:
+    elif data[0:8] == b"\x4D\x73\x67\x53\x74\x64\x42\x6E" and conf["msbt"] == True:
         if type(file) != bytes:
             msbt(file, out)
         else:
@@ -176,10 +175,10 @@ def ead(file: bytes or Path, out: Path):
             msbt(temp, out)
             temp.unlink()
 
-    elif data[0:4] == b"SARC" and SARC == True:
+    elif data[0:4] == b"SARC" and conf["SARC"] == True:
         sarc(data, out)
 
-    elif COPY == True:
+    elif conf["copy"] == True:
         cdir(out)
         print(f"[WRITE] {os.path.basename(out)}")
         out.write_bytes(data)
