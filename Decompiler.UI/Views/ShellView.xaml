@@ -60,7 +60,7 @@
                 <CheckBox Content="Havok (HKRB|HKSC|HKNM2|HKCL)"
                           IsChecked="{Binding HAVK}"
                           Style="{DynamicResource MaterialDesignFilterChipAccentOutlineCheckBox}"
-                          ToolTip="Converts any file with the HK header to JSON.&#x0a;Uses botw_havok by Martic Kröner" />
+                          ToolTip="Converts any file with the HK header to JSON.&#x0a;Uses botw_havok by Martic Kröner&#x0a;&#x0a;*Experimental" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <CheckBox Content="Texts (MSBT)"
@@ -264,7 +264,7 @@
                        FontFamily="Consolas"
                        FontSize="18"
                        FontWeight="Bold"
-                       Text="" />
+                       Text="{Binding Message}" />
         </Grid>
 
     </Grid>
