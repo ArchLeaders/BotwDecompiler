@@ -38,7 +38,7 @@ namespace Decompiler.UI.ViewModels
         public async void Decompile()
         {
             string temp = $"{Environment.GetEnvironmentVariable("temp")}\\botw_decomp";
-            string repo = "https://raw.githubusercontent.com/ArchLeaders/BotwDecompiler/master/src";
+            string repo = "https://raw.githubusercontent.com/ArchLeaders/BotwDecompiler/master/Decompiler.Py";
 
             try
             {
