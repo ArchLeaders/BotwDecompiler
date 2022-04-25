@@ -55,7 +55,7 @@
 
   <ItemGroup>
     <Reference Include="Acheron.Web">
-      <HintPath>..\..\..\BotwScripts\BotwScripts.Lib\bin\Release\net6.0\Acheron.Web.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Libraries\Acheron\Acheron.Web\bin\Release\net6.0\Acheron.Web.dll</HintPath>
     </Reference>
     <Reference Include="System.Operations">
       <HintPath>..\..\..\BotwScripts\BotwScripts.Lib\bin\Release\net6.0\System.Operations.dll</HintPath>
