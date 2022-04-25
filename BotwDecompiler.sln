@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DecompileBfres", "DecompileBfres\DecompileBfres.csproj", "{559A8A58-58FA-40E1-8920-2FC184C0AFF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Decompiler.Bfres", "Decompiler.Bfres\Decompiler.Bfres.csproj", "{559A8A58-58FA-40E1-8920-2FC184C0AFF9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Decompiler.UI", "Decompiler.UI\Decompiler.UI.csproj", "{A98946DB-DAC4-47CC-BF34-96D2D2CC3F47}"
 EndProject

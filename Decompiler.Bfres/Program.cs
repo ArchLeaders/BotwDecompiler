@@ -1,12 +1,12 @@
 ﻿using BfresLibrary;
 using BfresLibrary.WiiU;
-using DecompileBfres;
+using Decompiler.Bfres;
 using System.Drawing;
 using System.Text.Json;
 
 if (args.Length < 2)
 {
-    Console.WriteLine("Invalid Arguments | DecompileBfres.exe <\"bfresFile\"> <\"outputFolder\">");
+    Console.WriteLine("Invalid Arguments | Decompiler.Bfres.exe <\"bfresFile\"> <\"outputFolder\">");
     return;
 }
 

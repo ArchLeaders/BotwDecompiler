@@ -42,55 +42,58 @@ namespace Decompiler.UI.ViewModels
 
             try
             {
-                IsEnabled = false;
-                Message = "Downloading decompiler . . .";
-
-                List<Task> tasks = new();
-
-                tasks.Add(new Uri($"{repo}/main.py").DownloadFile($"{temp}\\main.py", true));
-                tasks.Add(new Uri($"{repo}/decomp.py").DownloadFile($"{temp}\\decomp.py", true));
-                tasks.Add(new Uri($"{repo}/exts.py").DownloadFile($"{temp}\\exts.py", true));
-                tasks.Add(new Uri($"{repo}/utils.py").DownloadFile($"{temp}\\utils.py", true));
-                tasks.Add(new Uri($"{repo}/lib.zip").DownloadFile($"{temp}\\lib.zip", true));
-                tasks.Add(new Uri($"{repo}/imported/bars_extractor.py").DownloadFile($"{temp}\\imported\\bars_extractor.py", true));
-
-                await Task.WhenAll(tasks);
-
-                Message = "Writing configuration . . .";
-
-                await File.WriteAllTextAsync($"{temp}\\config.yml",
-                    $"aamp: {AAMP}\n" +
-                    $"bars: {BARS}\n" +
-                    $"evfl: {EVFL}\n" +
-                    $"fres: {FRES}\n" +
-                    $"byml: {BYML}\n" +
-                    $"havk: {HAVK}\n" +
-                    $"msbt: {MSBT}\n" +
-                    $"sarc: {SARC}\n" +
-                    $"copy: {COPY}\n" +
-                    $"out_folder: {ExportDir}"
-                );
-
-                Message = "Extracting libs . . .";
-
-                ZipFile.ExtractToDirectory($"{temp}\\lib.zip", $"{temp}\\lib", true);
-
-                Message = "Decompiling, please wait (a while) . . .";
-
-                await System.Operations.Execute.App("python.exe", $"main.py", hidden: Silent, workingDirectory: temp);
-
-                Message = "Done! You can close this window now.";
-
-                var _notifyIcon = new System.Windows.Forms.NotifyIcon();
-                _notifyIcon.Icon = Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
-                _notifyIcon.BalloonTipClosed += (s, e) => _notifyIcon.Visible = false;
-                _notifyIcon.BalloonTipClicked += (s, e) =>
+                await Task.Run(async() =>
                 {
-                    if (WindowManager.Show("Close BOTW Asset Decompiler?", isOption: true))
-                        Environment.Exit(0);
-                };
-                _notifyIcon.Visible = true;
-                _notifyIcon.ShowBalloonTip(5000, "BOTW Asset Decompiler", "BOTW has finished decompiling.", System.Windows.Forms.ToolTipIcon.Info);
+                    IsEnabled = false;
+                    Message = "Downloading decompiler . . .";
+
+                    List<Task> tasks = new();
+
+                    tasks.Add(new Uri($"{repo}/main.py").DownloadFile($"{temp}\\main.py", true));
+                    tasks.Add(new Uri($"{repo}/decomp.py").DownloadFile($"{temp}\\decomp.py", true));
+                    tasks.Add(new Uri($"{repo}/exts.py").DownloadFile($"{temp}\\exts.py", true));
+                    tasks.Add(new Uri($"{repo}/utils.py").DownloadFile($"{temp}\\utils.py", true));
+                    tasks.Add(new Uri($"{repo}/lib.zip").DownloadFile($"{temp}\\lib.zip", true));
+                    tasks.Add(new Uri($"{repo}/imported/bars_extractor.py").DownloadFile($"{temp}\\imported\\bars_extractor.py", true));
+
+                    await Task.WhenAll(tasks);
+
+                    Message = "Writing configuration . . .";
+
+                    await File.WriteAllTextAsync($"{temp}\\config.yml",
+                        $"aamp: {AAMP}\n" +
+                        $"bars: {BARS}\n" +
+                        $"evfl: {EVFL}\n" +
+                        $"fres: {FRES}\n" +
+                        $"byml: {BYML}\n" +
+                        $"havk: {HAVK}\n" +
+                        $"msbt: {MSBT}\n" +
+                        $"sarc: {SARC}\n" +
+                        $"copy: {COPY}\n" +
+                        $"out_folder: {ExportDir}"
+                    );
+
+                    Message = "Extracting libs . . .";
+
+                    ZipFile.ExtractToDirectory($"{temp}\\lib.zip", $"{temp}\\lib", true);
+
+                    Message = "Decompiling, please wait (a while) . . .";
+
+                    await System.Operations.Execute.App("python.exe", $"main.py", hidden: Silent, workingDirectory: temp);
+
+                    Message = "Done! You can close this window now.";
+
+                    var _notifyIcon = new System.Windows.Forms.NotifyIcon();
+                    _notifyIcon.Icon = Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
+                    _notifyIcon.BalloonTipClosed += (s, e) => _notifyIcon.Visible = false;
+                    _notifyIcon.BalloonTipClicked += (s, e) =>
+                    {
+                        if (WindowManager.Show("Close BOTW Asset Decompiler?", isOption: true))
+                            Environment.Exit(0);
+                    };
+                    _notifyIcon.Visible = true;
+                    _notifyIcon.ShowBalloonTip(5000, "BOTW Asset Decompiler", "BOTW has finished decompiling.", System.Windows.Forms.ToolTipIcon.Info);
+                });
 
             }
             catch (Exception ex)
