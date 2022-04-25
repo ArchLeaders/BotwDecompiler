@@ -175,7 +175,7 @@ def ead(file: bytes or Path, out: Path, conf: dict):
             msbt(temp, out)
             temp.unlink()
 
-    elif data[0:4] == b"SARC" and conf["SARC"] == True:
+    elif data[0:4] == b"SARC" and conf["sarc"] == True:
         sarc(data, out)
 
     elif conf["copy"] == True:
