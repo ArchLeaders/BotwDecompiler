@@ -79,7 +79,7 @@ namespace Decompiler.UI.ViewModels
 
                 await System.Operations.Execute.App("python.exe", $"main.py", hidden: Silent, workingDirectory: temp);
 
-                Message = "Done! You can close this window now!";
+                Message = "Done! You can close this window now.";
 
                 var _notifyIcon = new System.Windows.Forms.NotifyIcon();
                 _notifyIcon.Icon = Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
