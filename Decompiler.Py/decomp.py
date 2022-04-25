@@ -62,7 +62,7 @@ def fres(file: Path, out: Path):
     """Decompile a bfres file"""
 
     cdir(out, True)
-    subprocess.check_call([".\\lib\\DecompileBfres.exe", f"{file}", f"{out}"])
+    subprocess.check_call([".\\lib\\Decompiler.Bfres.exe", f"{file}", f"{out}"])
 
 
 def byml(data: bytes, out: Path):

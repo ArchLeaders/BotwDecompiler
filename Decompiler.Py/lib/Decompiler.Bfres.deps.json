@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v6.0": {
-      "DecompileBfres/1.0.0": {
+      "Decompiler.Bfres/1.0.0": {
         "dependencies": {
           "DirectXTexNet": "1.0.3",
           "System.Drawing.Common": "6.0.0",
@@ -15,7 +15,7 @@
           "Syroot.Maths": "1.5.3.0"
         },
         "runtime": {
-          "DecompileBfres.dll": {}
+          "Decompiler.Bfres.dll": {}
         }
       },
       "DirectXTexNet/1.0.3": {
@@ -118,7 +118,7 @@
     }
   },
   "libraries": {
-    "DecompileBfres/1.0.0": {
+    "Decompiler.Bfres/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
