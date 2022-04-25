@@ -79,9 +79,16 @@ namespace Decompiler.UI.ViewModels
 
                 await System.Operations.Execute.App("python.exe", $"main.py", hidden: Silent, workingDirectory: temp);
 
+                Message = "Done! You can close this window now!";
+
                 var _notifyIcon = new System.Windows.Forms.NotifyIcon();
                 _notifyIcon.Icon = Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
                 _notifyIcon.BalloonTipClosed += (s, e) => _notifyIcon.Visible = false;
+                _notifyIcon.BalloonTipClicked += (s, e) =>
+                {
+                    if (WindowManager.Show("Close BOTW Asset Decompiler?", isOption: true))
+                        Environment.Exit(0);
+                };
                 _notifyIcon.Visible = true;
                 _notifyIcon.ShowBalloonTip(5000, "BOTW Asset Decompiler", "BOTW has finished decompiling.", System.Windows.Forms.ToolTipIcon.Info);
 
