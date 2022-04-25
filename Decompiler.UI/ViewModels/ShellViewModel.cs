@@ -43,6 +43,7 @@ namespace Decompiler.UI.ViewModels
             try
             {
                 IsEnabled = false;
+                Message = "Downloading decompiler . . .";
 
                 List<Task> tasks = new();
 
@@ -54,6 +55,8 @@ namespace Decompiler.UI.ViewModels
                 tasks.Add(new Uri($"{repo}/imported/bars_extractor.py").DownloadFile($"{temp}\\imported\\bars_extractor.py", true));
 
                 await Task.WhenAll(tasks);
+
+                Message = "Writing configuration . . .";
 
                 await File.WriteAllTextAsync($"{temp}\\config.yml",
                     $"aamp: {AAMP}\n" +
@@ -68,15 +71,19 @@ namespace Decompiler.UI.ViewModels
                     $"out_folder: {ExportDir}"
                 );
 
+                Message = "Extracting libs . . .";
+
                 ZipFile.ExtractToDirectory($"{temp}\\lib.zip", $"{temp}\\lib", true);
 
-                await System.Operations.Execute.App("cmd.exe", $"/k python main.py", hidden: Silent, workingDirectory: temp);
+                Message = "Decompiling, please wait (a while) . . .";
+
+                await System.Operations.Execute.App("python.exe", $"main.py", hidden: Silent, workingDirectory: temp);
 
                 var _notifyIcon = new System.Windows.Forms.NotifyIcon();
                 _notifyIcon.Icon = Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
                 _notifyIcon.BalloonTipClosed += (s, e) => _notifyIcon.Visible = false;
                 _notifyIcon.Visible = true;
-                _notifyIcon.ShowBalloonTip(5000, "BOTW Asset Decompiler", "BOTW Decompiled has finished decompiling.", System.Windows.Forms.ToolTipIcon.Info);
+                _notifyIcon.ShowBalloonTip(5000, "BOTW Asset Decompiler", "BOTW has finished decompiling.", System.Windows.Forms.ToolTipIcon.Info);
 
             }
             catch (Exception ex)
@@ -88,6 +95,9 @@ namespace Decompiler.UI.ViewModels
             {
                 if (Directory.Exists(temp))
                     Directory.Delete(temp, true);
+
+                if (Silent)
+                    Environment.Exit(0);
             }
             
         }
@@ -95,7 +105,6 @@ namespace Decompiler.UI.ViewModels
         public void Browse()
         {
             System.Windows.Forms.FolderBrowserDialog browse = new();
-            browse.InitialDirectory = ExportDir;
             if (browse.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 ExportDir = browse.SelectedPath;
         }
@@ -107,7 +116,7 @@ namespace Decompiler.UI.ViewModels
         ///
         #region Properties
 
-        private string _exportDir = ".\\decompiled";
+        private string _exportDir = $"{Environment.GetEnvironmentVariable("userprofile")}\\BOTW-Decompiled";
         public string ExportDir
         {
             get => _exportDir;
@@ -197,6 +206,13 @@ namespace Decompiler.UI.ViewModels
         {
             get => _silent;
             set => SetAndNotify(ref _silent, value);
+        }
+
+        private string _message = "";
+        public string Message
+        {
+            get => _message;
+            set => SetAndNotify(ref _message, value);
         }
 
         private Visibility _handledExceptionViewVisibility = Visibility.Collapsed;
