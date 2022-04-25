@@ -101,7 +101,7 @@ def msbt(file: Path, out: Path):
     subprocess.check_call([".\\lib\\Msyt.exe", "export", f"-o", out, f"{file}"])
 
 
-def sarc(data: bytes, out: Path):
+def sarc(data: bytes, out: Path, conf: dict):
     """Decompile a sarc file"""
 
     print("[SARC] Parsing sarc archive from memory...")
@@ -116,7 +116,7 @@ def sarc(data: bytes, out: Path):
         temp_file = Path(out, f"{sfile.name}.temp")
 
         cdir(out_file)
-        ead(sdata, out_file)
+        ead(sdata, out_file, conf)
 
     print("[SARC] Parsed sarc in memory")
 
@@ -176,7 +176,7 @@ def ead(file: bytes or Path, out: Path, conf: dict):
             temp.unlink()
 
     elif data[0:4] == b"SARC" and conf["sarc"] == True:
-        sarc(data, out)
+        sarc(data, out, conf)
 
     elif conf["copy"] == True:
         cdir(out)
