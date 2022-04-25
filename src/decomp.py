@@ -184,6 +184,7 @@ def ead(file: bytes or Path, out: Path, conf: dict):
         out.write_bytes(data)
 
     else:
+        print(f"[SKIPPED] {os.path.basename(out)}")
         return
 
 
