@@ -183,6 +183,9 @@ def ead(file: bytes or Path, out: Path, conf: dict):
         print(f"[WRITE] {os.path.basename(out)}")
         out.write_bytes(data)
 
+    else:
+        return
+
 
 def cdir(out: Path, is_archive: bool = False):
 
