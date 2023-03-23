@@ -11,4 +11,4 @@ Asset decompiler for Breath of the Wild. Aims to decompile AAMP, EvFl, Bfres, By
 |BYAML|UTF-8 YAML|**B**inary **YAML**|
 |Havok|UTF-8 JSON|**H**avo**k** Physics (Collision, NavMesh, Cloth, etc...)|
 |MSBT|UTF-8 YAML|**M**essage **S**tandard **B**inary **T**able|
-|SARC, AKA NAR when referenced by Bella|Folder containing decompiled formats|Nintendo Archive File|
+|SARC, AKA NARF when referenced by Bella|Folder containing decompiled formats|Nintendo Archive File|
